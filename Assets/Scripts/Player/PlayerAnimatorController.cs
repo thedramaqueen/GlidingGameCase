@@ -6,13 +6,16 @@ namespace Player
     {
         private const string FLY = "FLY";
         private const string ROTATE = "ROTATE";
-        
+        private const string THROW = "THROW";
         public Animator PlayerAnimator;
         
         private void OnPlayerStateChanged(PlayerStates state)
         {
             switch (state)
             {
+                case PlayerStates.Throw:
+                    PlayAnimation(THROW);
+                    break;
                 case PlayerStates.Fly:
                 PlayAnimation(FLY);  
                     break;

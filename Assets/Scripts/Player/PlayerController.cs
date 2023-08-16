@@ -1,5 +1,5 @@
 using System;
-using Player;
+
 using UnityEngine;
 
 public class PlayerController : ControllerBase
@@ -15,6 +15,8 @@ public class PlayerController : ControllerBase
     #endregion
 
     #region Components
+
+    private Rigidbody Rb;
 
     #endregion
 
@@ -38,6 +40,26 @@ public class PlayerController : ControllerBase
         Instance = this;
     }
 
+    private void Start()
+    {
+        Rb = this.GetComponent<Rigidbody>();
+    }
+
+    private void Update()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            if (PlayerState != PlayerStates.Sling)
+                ChangePlayerState(PlayerStates.Fly);
+        }
+
+        if (Input.GetMouseButtonUp(0))
+        {
+            if (PlayerState != PlayerStates.Sling)
+                ChangePlayerState(PlayerStates.Rotate);
+        }
+    }
+
     #endregion
 
 
@@ -48,17 +70,18 @@ public class PlayerController : ControllerBase
         if (playerState != PlayerStates.Sling)
             return;
 
-        playerState = PlayerStates.Rotate;
+        playerState = PlayerStates.Throw;
         OnPlayerStateChanged?.Invoke(playerState);
     }
 
     private void ChangeToFly()
     {
-        if (playerState != PlayerStates.Rotate)
-            return;
+        if (playerState is PlayerStates.Rotate or PlayerStates.Throw)
+        {
+            playerState = PlayerStates.Fly;
+            OnPlayerStateChanged?.Invoke(playerState);
+        }
 
-        playerState = PlayerStates.Fly;
-        OnPlayerStateChanged?.Invoke(playerState);
     }
 
     private void ChangeToRotate()
@@ -92,7 +115,7 @@ public class PlayerController : ControllerBase
             case PlayerStates.Rotate:
                 ChangeToRotate();
                 break;
-            case PlayerStates.Sling:
+            case PlayerStates.Throw:
                 SlingThrowed();
                 break;
         }
