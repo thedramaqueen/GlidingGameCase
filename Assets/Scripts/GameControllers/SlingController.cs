@@ -26,10 +26,13 @@ public class SlingController : ControllerBase
     [SerializeField] private Animator stickAnimator;
 
     #endregion
-
-
+    
     private void Update()
     {
+
+        if (_slingState == SlingStates.Throw)
+            return;
+        
         if (Input.GetMouseButtonDown(0))
         {
             if (_slingState != SlingStates.Start)
@@ -57,17 +60,22 @@ public class SlingController : ControllerBase
         }
     }
 
+    #region CalculateStickAnim
+
     private void CalculateStickAnimValue()
     {
         slingPower = Mathf.Clamp((SwipeController.swipeValue ), 0, 1);
         stickAnimator.Play("Bend", 0, slingPower);
     }
 
+    #endregion
+
+    #region Throw
+
     public void Throw()
     {
         PlayerController.Instance.ChangePlayerState(PlayerStates.Throw);
         OnSlingThrowed?.Invoke(slingVector3);
-        this.enabled = false;
     }
 
     private void ThrowPlayer()
@@ -75,12 +83,30 @@ public class SlingController : ControllerBase
         stickAnimator.SetTrigger("Release");
     }
 
+    #endregion
+
+    #region Reset
+
+    private void SlingReset()
+    {
+        _slingState = SlingStates.Start;
+    }
+    
+
+    #endregion
+
+    #region Listeners
 
     protected override void AddListeners()
     {
+        GameManager.OnRestartGame += SlingReset;
     }
 
     protected override void RemoveListeners()
     {
+        GameManager.OnRestartGame -= SlingReset;
     }
+
+    #endregion
+    
 }

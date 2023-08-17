@@ -64,8 +64,7 @@ public class PlayerController : ControllerBase
     }
 
     #endregion
-
-
+    
     #region Functions
 
     private void SlingThrowed()
@@ -113,6 +112,12 @@ public class PlayerController : ControllerBase
         OnPlayerStateChanged?.Invoke(playerState);
     }
 
+    private void SlingStart()
+    {
+        playerState = PlayerStates.Sling;
+        OnPlayerStateChanged?.Invoke(playerState);
+    }
+
     public void ChangePlayerState(PlayerStates requestedState)
     {
         switch (requestedState)
@@ -132,6 +137,9 @@ public class PlayerController : ControllerBase
             case PlayerStates.Jump:
                 JumpStart();
                 break;
+            case PlayerStates.Sling:
+                SlingStart();
+                break;
         }
     }
 
@@ -146,21 +154,29 @@ public class PlayerController : ControllerBase
             ChangePlayerState(PlayerStates.Dead);
         }
     }
+    
+    private void OnRestartGame()
+    {
+        ChangePlayerState(PlayerStates.Sling);
+    }
 
     #endregion
 
-    #region Add | Remove Listeners
+    #region Listeners
 
     protected override void AddListeners()
     {
         PlayerColisionController.OnPlayerCollided += OnPlayerCollided;
+        GameManager.OnRestartGame += OnRestartGame;
     }
 
     
 
+
     protected override void RemoveListeners()
     {
         PlayerColisionController.OnPlayerCollided -= OnPlayerCollided;
+        GameManager.OnRestartGame -= OnRestartGame;
     }
 
     #endregion

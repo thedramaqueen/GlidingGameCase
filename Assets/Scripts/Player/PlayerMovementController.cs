@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class PlayerMovementController : ControllerBase
 {
+    
     #region Fields
 
     [Range(0, 200)] [SerializeField] private float throwPower;
@@ -18,8 +19,7 @@ public class PlayerMovementController : ControllerBase
     [SerializeField] private Transform SlingPoint;
 
     #endregion
-
-
+    
     #region Unity Functions
 
     private void Start()
@@ -29,6 +29,9 @@ public class PlayerMovementController : ControllerBase
 
     private void Update()
     {
+        if(PlayerController.Instance is null)
+            return;
+        
         if (PlayerController.Instance.PlayerState == PlayerStates.Sling)
         {
             FollowSling();
@@ -61,6 +64,11 @@ public class PlayerMovementController : ControllerBase
         {
             RotateZero();
         }
+
+        if (state == PlayerStates.Dead)
+        {
+            rb.useGravity = true;
+        }
     }
 
     private void OnThrowPlayerWithSLing(Vector3 forceVector)
@@ -77,24 +85,27 @@ public class PlayerMovementController : ControllerBase
         JumpStart((int)obj);
     }
 
+    private void ResetMovement()
+    {
+        rb.isKinematic = true;
+        rb.useGravity = false;
+    }
+
     #endregion
+
+    #region ResetRotation
 
     private void RotateZero()
     {
         transform.DORotate(Vector3.zero, 1);
     }
 
+    #endregion
+
     #region Rotation Movement
 
     private void RotationMovement()
     {
-        // var velocity = rb.velocity;
-        // velocity -= Time.deltaTime * Vector3.up * 1000;
-        // velocity.y = Mathf.Clamp(velocity.y, -50, 200f);
-        // velocity.x = 0;
-        //
-        //
-        // rb.velocity = Vector3.Lerp(rb.velocity, velocity,Time.deltaTime * 50);
         rb.angularVelocity = Vector3.zero;
     }
 
@@ -159,13 +170,24 @@ public class PlayerMovementController : ControllerBase
     }
 
     #endregion
+    
+    #region Remap
 
+    private float Remap(float value, float oldMin, float oldMax, float newMin, float newMax)
+    {
+        return newMin + (value - oldMin) * (newMax - newMin) / (oldMax - oldMin);
+    }
+
+    #endregion
+    
+    #region Listeners
 
     protected override void AddListeners()
     {
         PlayerController.OnPlayerStateChanged += OnPlayerStateChanged;
         SlingController.OnSlingThrowed += OnThrowPlayerWithSLing;
         PlayerColisionController.OnPlayerCollided += OnPlayerCollided;
+        GameManager.OnRestartGame += ResetMovement;
     }
 
 
@@ -174,11 +196,10 @@ public class PlayerMovementController : ControllerBase
         PlayerController.OnPlayerStateChanged -= OnPlayerStateChanged;
         SlingController.OnSlingThrowed -= OnThrowPlayerWithSLing;
         PlayerColisionController.OnPlayerCollided -= OnPlayerCollided;
+        GameManager.OnRestartGame -= ResetMovement;
     }
+    
 
+    #endregion
 
-    private float Remap(float value, float oldMin, float oldMax, float newMin, float newMax)
-    {
-        return newMin + (value - oldMin) * (newMax - newMin) / (oldMax - oldMin);
-    }
 }

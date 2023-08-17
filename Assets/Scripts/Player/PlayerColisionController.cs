@@ -14,6 +14,8 @@ public class PlayerColisionController : ControllerBase
         }
     }
 
+    #region Listeners
+
     protected override void AddListeners()
     {
         
@@ -23,4 +25,6 @@ public class PlayerColisionController : ControllerBase
     {
         
     }
+
+    #endregion
 }

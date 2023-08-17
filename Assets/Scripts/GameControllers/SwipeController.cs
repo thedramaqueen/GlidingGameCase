@@ -2,11 +2,17 @@ using UnityEngine;
 
 public class SwipeController : MonoBehaviour
 {
+    
+    #region Fields
+
     private Vector3 mouseStartPosition;
     public static float swipeValue;
 
     public float maxSwipeDistance = Screen.width/2;
+    
 
+    #endregion
+    
     void Update()
     {
         if (Input.GetMouseButtonDown(0))
@@ -24,7 +30,5 @@ public class SwipeController : MonoBehaviour
             swipeValue = 0.0f;
         }
     }
-
-    
     
 }
