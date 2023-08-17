@@ -86,9 +86,8 @@ public class PlayerController : ControllerBase
 
     private void ChangeToRotate()
     {
-        if (playerState != PlayerStates.Fly)
+        if (playerState != PlayerStates.Fly && playerState != PlayerStates.Jump)
             return;
-
         playerState = PlayerStates.Rotate;
         OnPlayerStateChanged?.Invoke(playerState);
     }
@@ -99,6 +98,15 @@ public class PlayerController : ControllerBase
             return;
 
         playerState = PlayerStates.Dead;
+        OnPlayerStateChanged?.Invoke(playerState);
+    }
+
+    private void JumpStart()
+    {
+        if(playerState == PlayerStates.Dead || playerState == PlayerStates.Sling || playerState == PlayerStates.Throw)
+            return;
+
+        playerState = PlayerStates.Jump;
         OnPlayerStateChanged?.Invoke(playerState);
     }
 
@@ -117,6 +125,9 @@ public class PlayerController : ControllerBase
                 break;
             case PlayerStates.Throw:
                 SlingThrowed();
+                break;
+            case PlayerStates.Jump:
+                JumpStart();
                 break;
         }
     }

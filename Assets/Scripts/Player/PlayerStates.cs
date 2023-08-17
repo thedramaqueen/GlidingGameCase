@@ -5,5 +5,6 @@
         Throw,
         Fly,
         Rotate,
+        Jump,
         Dead,
     }
