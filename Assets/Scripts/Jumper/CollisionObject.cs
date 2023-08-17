@@ -12,23 +12,4 @@ public class CollisionObject : MonoBehaviour
 
     public CollisionType myType;
 
-
-    private void OnValidate()
-    {
-        
-        foreach (var child in transform)
-        {
-            var obj = child as Transform;
-
-            if (obj.name.Contains(myType.ToString()))
-            {
-                obj.gameObject.SetActive(true);
-            }
-            else
-            {
-                obj.gameObject.SetActive(false);
-            }
-        }
-        
-    }
 }

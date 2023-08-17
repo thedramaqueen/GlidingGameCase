@@ -47,6 +47,9 @@ public class PlayerController : ControllerBase
 
     private void Update()
     {
+        if(playerState == PlayerStates.Dead)
+            return;
+        
         if (Input.GetMouseButtonDown(0))
         {
             if (PlayerState != PlayerStates.Sling)
@@ -134,14 +137,30 @@ public class PlayerController : ControllerBase
 
     #endregion
 
+    #region Events
+
+    private void OnPlayerCollided(CollisionObject.CollisionType obj)
+    {
+        if (obj == CollisionObject.CollisionType.Ground)
+        {
+            ChangePlayerState(PlayerStates.Dead);
+        }
+    }
+
+    #endregion
+
     #region Add | Remove Listeners
 
     protected override void AddListeners()
     {
+        PlayerColisionController.OnPlayerCollided += OnPlayerCollided;
     }
+
+    
 
     protected override void RemoveListeners()
     {
+        PlayerColisionController.OnPlayerCollided -= OnPlayerCollided;
     }
 
     #endregion

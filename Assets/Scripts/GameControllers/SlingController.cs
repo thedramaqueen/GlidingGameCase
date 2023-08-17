@@ -13,7 +13,7 @@ public class SlingController : ControllerBase
     #region Fields
 
     [SerializeField] private float slingPower;
-    private Vector3 slingVector3 => (Vector3.up * 10) +(Vector3.forward * slingPower);
+    private Vector3 slingVector3 => (Vector3.up * 2) +(Vector3.forward * slingPower);
 
     public static Action<Vector3> OnSlingThrowed;
 

@@ -1,42 +1,47 @@
+using System;
+using DG.Tweening;
+using UnityEngine;
+using UnityEngine.Animations;
 
-    using System;
-    using Cinemachine;
-    using UnityEngine;
+public class CameraController : ControllerBase
+{
+    private PositionConstraint positionConstraint;
 
-    public class CameraController : ControllerBase
+    public Vector3 FollowRotation;
+
+    private void Start()
     {
-        private CinemachineVirtualCamera VirtualCamera;
-        private CinemachineTransposer VirtualCameraTransposer;
+        positionConstraint = GetComponent<PositionConstraint>();
+    }
 
-        public Vector3 SlingPosition;
-        public Vector3 FollowPosition;
-        
-        
-        
-        private void Start()
+    private void OnPlayerStateChanged(PlayerStates state)
+    {
+        if (state == PlayerStates.Throw)
         {
-            VirtualCamera = this.GetComponent<CinemachineVirtualCamera>();
-            VirtualCameraTransposer = VirtualCamera.GetCinemachineComponent<CinemachineTransposer>();
-        }
-        
-        private void OnPlayerStateChanged(PlayerStates state)
-        {
-
-            if (state == PlayerStates.Throw)
+            transform.DORotate(FollowRotation, 1);
+            Vector3 value = Vector3.zero;
+            positionConstraint.enabled = true;
+            DOTween.To(() => value, x => value = x, new Vector3(0, 20, -70), .5f).OnUpdate(() =>
             {
-                VirtualCameraTransposer.m_FollowOffset = FollowPosition;
-            }
+                positionConstraint.translationOffset = value;
+            });
+           
         }
 
-        protected override void AddListeners()
+        if (state == PlayerStates.Dead)
         {
-            PlayerController.OnPlayerStateChanged += OnPlayerStateChanged;
-        }
-
-        
-
-        protected override void RemoveListeners()
-        {
-            PlayerController.OnPlayerStateChanged -= OnPlayerStateChanged;
+            positionConstraint.enabled = false;
         }
     }
+
+    protected override void AddListeners()
+    {
+        PlayerController.OnPlayerStateChanged += OnPlayerStateChanged;
+    }
+
+
+    protected override void RemoveListeners()
+    {
+        PlayerController.OnPlayerStateChanged -= OnPlayerStateChanged;
+    }
+}
