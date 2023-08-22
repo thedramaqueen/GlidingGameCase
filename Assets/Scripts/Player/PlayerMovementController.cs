@@ -27,7 +27,7 @@ public class PlayerMovementController : ControllerBase
         rb = this.GetComponent<Rigidbody>();
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         if(PlayerController.Instance is null)
             return;
@@ -45,12 +45,12 @@ public class PlayerMovementController : ControllerBase
                  PlayerController.Instance.PlayerState == PlayerStates.Throw)
         {
             RotationMovement();
-            rb.velocity -= Time.deltaTime * Vector3.up * rb.mass;
+            rb.velocity -= Time.fixedDeltaTime * Vector3.up * rb.mass;
         }
         else if (PlayerController.Instance.PlayerState == PlayerStates.Jump)
         {
             JumpMovement();
-            rb.velocity -= Time.deltaTime * Vector3.up * rb.mass;
+            rb.velocity -= Time.fixedDeltaTime * Vector3.up * rb.mass;
         }
     }
 
@@ -128,13 +128,13 @@ public class PlayerMovementController : ControllerBase
         rb.velocity = Vector3.Lerp(rb.velocity,
             (Vector3.forward * 50) + (Vector3.right * SwipeController.swipeValue * -LeftRightFlyPower) +
             (Vector3.up * -3),
-            Time.deltaTime * 10);
+            Time.fixedDeltaTime * 20);
         rb.angularVelocity = Vector3.zero;
     }
 
     private void RotateWithFly()
     {
-        //var direction = Vector3.Lerp(transform.localEulerAngles, Vector3.right* SwipeController.swipeValue * 90, Time.deltaTime);
+        //var direction = Vector3.Lerp(transform.localEulerAngles, Vector3.right* SwipeController.swipeValue * 90, Time.fixedDeltaTime);
         transform.localEulerAngles = new Vector3(
             Remap(SwipeController.swipeValue * -1, -1, 1, 60, 120),
             90,
@@ -150,10 +150,10 @@ public class PlayerMovementController : ControllerBase
         if (PlayerController.Instance.PlayerState == PlayerStates.Jump)
             return;
 
-        JumpTimer = power / 10.0f;
+        JumpTimer = power /5.0f;
         var zeroGravity = rb.velocity;
-        zeroGravity.y = 0;
-
+        zeroGravity.y = 20;
+        rb.velocity = zeroGravity;
         PlayerController.Instance.ChangePlayerState(PlayerStates.Jump);
     }
 
@@ -165,7 +165,7 @@ public class PlayerMovementController : ControllerBase
             return;
         }
 
-        JumpTimer -= Time.deltaTime;
+        JumpTimer -= Time.fixedDeltaTime;
         rb.velocity += Vector3.up * JumpPower + (Vector3.forward * JumpPower / 5);
     }
 

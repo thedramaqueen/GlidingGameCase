@@ -120,6 +120,7 @@ public class PlayerController : ControllerBase
 
     public void ChangePlayerState(PlayerStates requestedState)
     {
+        Debug.Log($"Current State {playerState} \n RequestedState {requestedState}");
         switch (requestedState)
         {
             case PlayerStates.Dead:

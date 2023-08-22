@@ -8,8 +8,10 @@ public class PlayerColisionController : ControllerBase
 
     private void OnCollisionEnter(Collision collision)
     {
+        //Debug.Log("Triggered");
         if (collision.transform.TryGetComponent(out CollisionObject obj))
         {
+            //Debug.Log($"{obj.myType}");
             OnPlayerCollided?.Invoke(obj.myType);
         }
     }
